@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <label for="#chat-message-input" >Enter Message</label>
+    <input type="text" id="chat-message-input" placeholder="Enter Message">
+    <button id="chat-message-submit">Submit</button>
+    <div id="chat-log"></div>
+
+
+</body>
+</html>
+
+<script>
+    const chatSocket = new WebSocket(
+      'ws://'
+      + window.location.host
+      + '/ws/test'
+  );
+
+  chatSocket.onmessage = function(e) {
+      const data = JSON.parse(e.data);
+      console.log(data);
+      document.querySelector('#chat-log').value += (data.message + '\n');
+  };
+
+  chatSocket.onclose = function(e) {
+      console.error('Chat socket closed unexpectedly');
+  };
+
+
+  document.querySelector('#chat-message-submit').onclick = function(e) {
+      console.log("clicked sumbit");
+      const messageInputDom = document.querySelector('#chat-message-input');
+      const message = messageInputDom.value;
+      console.log(message);
+      chatSocket.send(JSON.stringify({
+          'message': message
+      }));
+      messageInputDom.value = '';
+  };
+
+</script>
